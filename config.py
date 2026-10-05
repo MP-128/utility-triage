@@ -3,24 +3,31 @@
 Every setting can be overridden with an environment variable (see .env.example). On Vercel, set them in
 Project → Settings → Environment Variables.
 """
+import logging
 import os
 from datetime import datetime
-from zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+
+def setting(name, default=""):
+    """Read an environment variable, ignoring stray spaces. A blank value counts as not set."""
+    return (os.environ.get(name) or "").strip() or default
+
 
 # The long ID in the sheet's link: docs.google.com/spreadsheets/d/<SHEET_ID>/edit
-SHEET_ID = os.environ.get("SHEET_ID", "1LQmlWcPRNL-WhnyOXdU0b7FXrfNDpoCiKjQhjLT3nzU")
+SHEET_ID = setting("SHEET_ID", "1LQmlWcPRNL-WhnyOXdU0b7FXrfNDpoCiKjQhjLT3nzU")
 
 # Google turns any sheet shared as "Anyone with the link" into CSV at this address.
 SHEET_CSV_URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv"
 
 # Vercel sets VERCEL=1 automatically on its servers.
-ON_VERCEL = bool(os.environ.get("VERCEL"))
+ON_VERCEL = bool(setting("VERCEL"))
 
 # The backup copy that ships with the code. It's the last resort if Google can't be reached.
 SEED_BACKUP_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "backup.csv")
 
 # Where each good download is saved. Vercel's servers can only write to /tmp, so use that there.
-BACKUP_PATH = os.environ.get("BACKUP_PATH") or (
+BACKUP_PATH = setting("BACKUP_PATH") or (
     "/tmp/utility-triage-backup.csv" if ON_VERCEL else SEED_BACKUP_PATH
 )
 
@@ -31,7 +38,12 @@ MAX_ROWS = 5000
 
 # Ratings depend on "today", so pin the timezone. Servers run on UTC, and Vercel doesn't allow
 # setting the usual TZ variable, so the app converts the time itself.
-APP_TIMEZONE = os.environ.get("APP_TIMEZONE", "America/Toronto")
+APP_TIMEZONE = setting("APP_TIMEZONE", "America/Toronto")
+try:
+    ZoneInfo(APP_TIMEZONE)
+except (ZoneInfoNotFoundError, ValueError):
+    logging.getLogger(__name__).warning("Unknown APP_TIMEZONE %r; using America/Toronto", APP_TIMEZONE)
+    APP_TIMEZONE = "America/Toronto"
 
 
 def local_now():

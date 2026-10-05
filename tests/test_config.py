@@ -5,7 +5,7 @@ import config
 
 
 def reload_config(monkeypatch, **env):
-    for name in ["VERCEL", "BACKUP_PATH", "APP_TIMEZONE"]:
+    for name in ["VERCEL", "BACKUP_PATH", "APP_TIMEZONE", "SHEET_ID"]:
         monkeypatch.delenv(name, raising=False)
     for name, value in env.items():
         monkeypatch.setenv(name, value)
@@ -37,3 +37,15 @@ def test_local_now_is_toronto_by_default(monkeypatch):
 
 def test_timezone_can_be_changed(monkeypatch):
     assert str(reload_config(monkeypatch, APP_TIMEZONE="America/Vancouver").local_now().tzinfo) == "America/Vancouver"
+
+
+def test_blank_settings_use_defaults(monkeypatch):
+    c = reload_config(monkeypatch, APP_TIMEZONE="  ", SHEET_ID="")
+    assert c.APP_TIMEZONE == "America/Toronto"
+    assert c.SHEET_ID.startswith("1LQml")
+
+
+def test_unknown_timezone_falls_back_instead_of_crashing(monkeypatch):
+    c = reload_config(monkeypatch, APP_TIMEZONE="Toronto")
+    assert c.APP_TIMEZONE == "America/Toronto"
+    assert c.local_now().tzinfo is not None

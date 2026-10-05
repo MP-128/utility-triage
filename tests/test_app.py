@@ -238,3 +238,21 @@ def test_healthz_needs_no_password_and_reveals_nothing(client, monkeypatch):
     response = client.get("/healthz")
     assert response.status_code == 200
     assert response.get_json() == {"status": "ok"}
+
+
+def test_blank_username_setting_means_default(client, monkeypatch):
+    # A Vercel variable saved with an empty value must not turn the username into "".
+    monkeypatch.setenv("APP_PASSWORD", "s3cret")
+    monkeypatch.setenv("APP_USERNAME", "")
+    assert client.get("/", headers=basic("triage", "s3cret")).status_code == 200
+
+
+def test_stray_spaces_in_settings_are_ignored(client, monkeypatch):
+    monkeypatch.setenv("APP_PASSWORD", "  s3cret\n")
+    monkeypatch.setenv("APP_USERNAME", " triage ")
+    assert client.get("/", headers=basic("triage", "s3cret")).status_code == 200
+
+
+def test_password_with_punctuation(client, monkeypatch):
+    monkeypatch.setenv("APP_PASSWORD", "Pa55word!#$")
+    assert client.get("/", headers=basic("triage", "Pa55word!#$")).status_code == 200

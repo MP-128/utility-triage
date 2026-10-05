@@ -1,10 +1,9 @@
 """Utility Asset Triage - a Flask web app for reviewing asset health."""
 import hmac
-import os
 
 from flask import Flask, render_template, request
 
-from config import ON_VERCEL, local_now
+from config import ON_VERCEL, local_now, setting
 from data_source import ASSET_TYPES, NETWORKS, load_assets
 from risk import RATINGS, cv_rating, days_until_maintenance, rate_asset
 
@@ -36,12 +35,12 @@ def require_password():
     """
     if request.endpoint == "healthz":
         return None
-    password = os.environ.get("APP_PASSWORD", "")
+    password = setting("APP_PASSWORD")
     if not password:
         if ON_VERCEL:
             return "Password not configured: set APP_PASSWORD in Vercel, then redeploy.", 503
         return None
-    username = os.environ.get("APP_USERNAME", "triage")
+    username = setting("APP_USERNAME", "triage")
     auth = request.authorization
     if auth and _matches(auth.username, username) and _matches(auth.password, password):
         return None
