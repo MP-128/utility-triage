@@ -1,0 +1,17 @@
+asset_id,asset_type,network,location,last_inspection_date,next_maintenance_date,cv_health_score,condition_notes
+POL-1042,Pole,Distribution,"Maple Ave & 3rd St, Riverside",2026-03-28,2026-09-22,52,"Crossarm cracked, woodpecker damage at 12 ft"
+TRF-2207,Transformer,Transmission,"North Ridge Substation, Bay 2",2026-05-07,2026-09-29,34,Oil leak at lower radiator gasket; gas analysis shows rising acetylene
+OHL-3315,Overhead Line,Transmission,"230 kV Line L-7, Spans 41-42",2026-09-13,2027-05-02,14,Broken conductor strands near suspension clamp (3 of 26 strands)
+MTR-4481,Meter,Distribution,"1180 Cedar Ln, Oak Park",2025-08-30,2026-09-04,71,"Meter seal broken, display flickers intermittently"
+POL-1077,Pole,Transmission,"69 kV Line T-3, Structure 118",2025-10-29,2026-10-27,64,"Ground-line decay found on sounding, about 15% section loss"
+TRF-2251,Transformer,Distribution,"Pad-mount, 42 Birch Ct, Lakeview",2025-11-28,2026-11-18,58,"Rust on cabinet base, door latch stiff"
+OHL-3390,Overhead Line,Distribution,"Feeder 12B, Pine St (Poles 2210-2216)",2026-09-20,2027-07-31,31,Vegetation within 1 m of phase conductor; flashover marks on insulator
+MTR-4502,Meter,Distribution,"Riverside Mall, Unit 14",2025-12-28,2026-12-01,80,Reading gaps over last 2 weeks; AMI firmware upgrade pending
+POL-1103,Pole,Distribution,Harbor Rd near Pier 6,2026-01-17,2027-01-07,66,"Minor checking at pole top, guy wire slightly slack"
+TRF-2288,Transformer,Transmission,"Westgate Substation, Transformer T2",2026-09-04,2027-04-02,47,Bushing porcelain chipped; hot spot +8 C on infrared scan
+OHL-3402,Overhead Line,Transmission,"345 kV Line H-1, Spans 88-90",2026-02-06,2027-01-22,72,"Bird nest on tower crossarm, loose spacer damper"
+MTR-4560,Meter,Transmission,"Eastfield Substation, tie-line revenue meter",2026-03-18,2026-12-18,69,Discolored terminal on CT wiring block
+MTR-4533,Meter,Distribution,"77 Willow Dr, Hillcrest",2026-08-05,2027-06-01,92,No visible defects
+POL-1150,Pole,Transmission,"115 kV Line T-9, Structure 54",2026-08-30,2027-08-30,88,"Sound on hammer test, treated in 2024"
+TRF-2310,Transformer,Distribution,"Pole-mount, 9 Aspen Way, Brookfield",2026-07-06,2027-03-03,83,"Light surface rust on tank, oil level normal"
+OHL-3455,Overhead Line,Distribution,"Feeder 7A, Main St (Poles 1501-1509)",2026-08-20,2027-04-22,76,Clearances OK after last tree-trim cycle

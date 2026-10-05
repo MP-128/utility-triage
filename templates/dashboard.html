@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block banner_actions %}
+  <span class="actions"><a href="{{ request.full_path }}">↻ Refresh data</a></span>
+{% endblock %}
+
+{% block banner_extra %}
+  {% if source.warnings %}
+    <ul>
+      {% for warning in source.warnings %}<li>{{ warning }}</li>{% endfor %}
+    </ul>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <nav class="tiles" aria-label="Count by risk rating">
+    {% for rating in ratings %}
+      {% set active = filters.risk == rating %}
+      <a class="tile {{ rating }}{% if active %} active{% endif %}"
+         href="{{ url_for('dashboard', type=filters.get('type'), network=filters.get('network'), risk=None if active else rating) }}"
+         title="{{ 'Show all ratings' if active else 'Show only ' ~ rating }}">
+        <span class="count">{{ counts[rating] }}</span>
+        <span class="label">{{ rating }}</span>
+      </a>
+    {% endfor %}
+  </nav>
+
+  <form class="filters" method="get" action="{{ url_for('dashboard') }}">
+    <label>Asset type
+      <select name="type">
+        <option value="">All types</option>
+        {% for t in asset_types %}<option{% if filters.type == t %} selected{% endif %}>{{ t }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Network
+      <select name="network">
+        <option value="">All networks</option>
+        {% for n in networks %}<option{% if filters.network == n %} selected{% endif %}>{{ n }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Risk
+      <select name="risk">
+        <option value="">All ratings</option>
+        {% for r in ratings %}<option{% if filters.risk == r %} selected{% endif %}>{{ r }}</option>{% endfor %}
+      </select>
+    </label>
+    <button type="submit">Apply</button>
+    <a class="clear" href="{{ url_for('dashboard') }}">Clear</a>
+  </form>
+
+  <div class="table-box">
+    <table>
+      <thead>
+        <tr>
+          <th>Asset ID</th>
+          <th>Type</th>
+          <th>Network</th>
+          <th>Location</th>
+          <th>CV health</th>
+          <th>Next maintenance</th>
+          <th>Days remaining</th>
+          <th>Risk</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in assets %}
+          {% set link = url_for('asset_detail', asset_id=a.asset_id, **filters) %}
+          <tr>
+            <td class="nowrap"><a class="asset-link" href="{{ link }}"><strong>{{ a.asset_id }}</strong></a></td>
+            <td class="nowrap">{{ a.asset_type }}</td>
+            <td>{{ a.network }}</td>
+            <td>{{ a.location }}</td>
+            <td class="nowrap">{{ a.cv_health_score }}/100</td>
+            <td class="nowrap">{{ a.next_maintenance_date.strftime('%d %b %Y') }}</td>
+            <td class="nowrap{% if a.days < 0 %} overdue{% endif %}">{{ a.days | days_label }}</td>
+            <td>
+              <span class="badge {{ a.rating }}">{{ a.rating }}</span>
+              <ul class="reasons">{% for r in a.reasons %}<li>{{ r }}</li>{% endfor %}</ul>
+            </td>
+          </tr>
+        {% else %}
+          {% if total == 0 %}
+            <tr><td colspan="8" class="muted">There are no assets to show yet. {{ "Add rows to the Google Sheet, then refresh." if source.mode == "live" else "See the message above." }}</td></tr>
+          {% else %}
+            <tr><td colspan="8" class="muted">No assets match these filters. <a href="{{ url_for('dashboard') }}">Clear filters</a></td></tr>
+          {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="muted">Showing {{ assets | length }} of {{ total }} assets, most urgent first (by rating, then days until maintenance).</p>
+{% endblock %}

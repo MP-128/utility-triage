@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}{{ a.asset_id }} · Utility Asset Triage{% endblock %}
+
+{% block content %}
+  <p><a href="{{ url_for('dashboard', **filters) }}">← Back to dashboard</a></p>
+
+  <section class="card rated {{ a.rating }}">
+    <h2>{{ a.asset_id }} <span class="badge {{ a.rating }}">{{ a.rating }}</span></h2>
+    <p class="muted" style="margin-top:0">{{ a.asset_type }} · {{ a.network }} · {{ a.location }}</p>
+    <strong>Why this rating</strong>
+    <ul class="reasons" style="font-size:15px">{% for r in a.reasons %}<li>{{ r }}</li>{% endfor %}</ul>
+  </section>
+
+  <section class="stats">
+    <div class="card stat">
+      <span class="muted">Maintenance countdown</span>
+      <span class="big{% if a.days < 0 %} overdue{% endif %}">{{ a.days | days_label }}</span>
+      <span class="muted">scheduled {{ a.next_maintenance_date.strftime('%d %b %Y') }}</span>
+    </div>
+    <div class="card stat {{ cv_rating }}">
+      <span class="muted">CV health score</span>
+      <span class="big">{{ a.cv_health_score }}/100</span>
+      <span class="muted">{{ cv_label }}</span>
+      <div class="meter"><span style="width: {{ a.cv_health_score }}%"></span></div>
+    </div>
+    <div class="card stat">
+      <span class="muted">Last inspection</span>
+      <span class="big">{{ a.last_inspection_date.strftime('%d %b %Y') }}</span>
+      <span class="muted">{{ days_since_inspection }} days ago</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 style="font-size:17px">Condition notes</h2>
+    <p class="notes">{{ a.condition_notes }}</p>
+  </section>
+
+  <section class="card">
+    <h2 style="font-size:17px">All fields</h2>
+    <dl class="fields">
+      <dt>Asset ID</dt><dd>{{ a.asset_id }}</dd>
+      <dt>Asset type</dt><dd>{{ a.asset_type }}</dd>
+      <dt>Network</dt><dd>{{ a.network }}</dd>
+      <dt>Location</dt><dd>{{ a.location }}</dd>
+      <dt>Last inspection date</dt><dd>{{ a.last_inspection_date.isoformat() }}</dd>
+      <dt>Next maintenance date</dt><dd>{{ a.next_maintenance_date.isoformat() }}</dd>
+      <dt>CV health score</dt><dd>{{ a.cv_health_score }}/100</dd>
+      <dt>Risk rating</dt><dd><span class="badge {{ a.rating }}">{{ a.rating }}</span></dd>
+    </dl>
+  </section>
+
+  <p><a href="{{ url_for('dashboard', **filters) }}">← Back to dashboard</a></p>
+{% endblock %}
